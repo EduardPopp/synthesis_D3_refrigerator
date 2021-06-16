@@ -6,7 +6,11 @@
 ##
 
 SRC	=	src/main.c \
-		src/linked_list.c
+		src/linked_list.c	\
+		src/my_str_to_word_array.c	\
+		src/fridgeloop.c	\
+		src/exit_fridge.c	\
+		src/display_command.c
 
 OBJ	=	$(SRC:.c=.o)
 

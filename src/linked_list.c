@@ -8,13 +8,10 @@
 #include "../include/helper.h"
 #include "../include/my.h"
 
-llist_t *create_obj(llist_t *next_node, csv *csv, int i)
+llist_t *create_obj(llist_t *next_node, char **itemchain, int i)
 {
-    next_node->name = csv->data[i][0];
-    next_node->atk = atoi(csv->data[i][1]);
-    next_node->def = atoi(csv->data[i][2]);
-    next_node->spd = atoi(csv->data[i][3]);
-    next_node->health = atoi(csv->data[i][4]);
+    next_node->item = itemchain[i];
+    next_node->quantity = atoi(itemchain[i + 2]);
     return (next_node);
 }
 
@@ -34,7 +31,7 @@ int size_manager(llist_t *list, llist_t *next_node)
     return (0);
 }
 
-int new_node(llist_t *list, csv *csv, int i)
+int new_node(llist_t *list, char **itemchain, int i)
 {
     llist_t *next_node = malloc(sizeof(llist_t));
 
@@ -42,7 +39,7 @@ int new_node(llist_t *list, csv *csv, int i)
         return (-1);
     next_node->prev = NULL;
     next_node->next = NULL;
-    next_node = create_obj(next_node, csv, i);
+    next_node = create_obj(next_node, itemchain, i);
     if (next_node == NULL)
         return (-1);
     if (size_manager(list, next_node) == -1)
@@ -58,11 +55,8 @@ llist_t *create_list(void)
         return (NULL);
     list->prev = NULL;
     list->next = NULL;
-    list->name = NULL;
-    list->atk = 0;
-    list->def = 0;
-    list->spd = 0;
-    list->health = 0;
+    list->item = NULL;
+    list->quantity = 0;
     list->size = 0;
     return (list);
 }
