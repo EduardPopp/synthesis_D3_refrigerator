@@ -30,4 +30,8 @@ void fridge_loop(llist_t *fridge, int loopstate, char **command_array);
 
 int count_words(char *str, char sep);
 
+int do_display(char *linestr, llist_t *fridge);
+
+int do_exit(char *linestr, llist_t *fridge);
+
 #endif /* !HELPER_H_ */

@@ -171,10 +171,7 @@ int main(void)
     char *commandstring = "disp fridge\n;addToFridge;make;exit\n";
     char **command_array = my_str_to_word_array(commandstring, ';', 0);
     int loopstate = 1;
-
-    for (int i = 0; command_array[i] != NULL; i++) {
-        printf("%d - %s\n", i, command_array[i]);
-    }
+    
     itemchain = savefile_handler(fridge, buffer, itemchain);
     fridge_loop(fridge, loopstate, command_array);
     free_items(itemchain);

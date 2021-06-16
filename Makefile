@@ -10,7 +10,8 @@ SRC	=	src/main.c \
 		src/my_str_to_word_array.c	\
 		src/fridgeloop.c	\
 		src/exit_fridge.c	\
-		src/display_command.c
+		src/display_command.c	\
+		src/fridgeloop_utils.c
 
 OBJ	=	$(SRC:.c=.o)
 
