@@ -10,13 +10,14 @@
 
 void save_fridge_inventory(llist_t *fridge)
 {
-    llist_t *cur = malloc(sizeof(llist_t));
+    llist_t *cur = fridge->prev;
     FILE *savefile;
 
     savefile = fopen(".save", "w+");
-    for (cur = fridge->prev; cur != NULL; cur = cur->next) {
+    for (; cur != NULL; cur = cur->next) {
         fprintf(savefile, "%s = %d\n", cur->item, cur->quantity);
     }
+    fclose(savefile);
 }
 
 void exit_command(llist_t *fridge)

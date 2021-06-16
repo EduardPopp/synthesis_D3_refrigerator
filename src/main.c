@@ -142,16 +142,6 @@ void list_free(llist_t *fridge, char **command_array, char *commandstring)
     free(cur);
 }
 
-// void print_list(llist_t *fridge)
-// {
-//     llist_t *cur = malloc(sizeof(llist_t));
-
-//     for (cur = fridge->prev; cur != NULL; cur = cur->next) {
-//         printf("%s = %d\n", cur->item, cur->quantity);
-//     }
-//     free(cur);
-// }
-
 char **savefile_handler(llist_t *fridge, char *buffer, char **itemchain)
 {
     FILE *savefile = NULL;
@@ -168,7 +158,6 @@ char **savefile_handler(llist_t *fridge, char *buffer, char **itemchain)
         check_itemchain(itemchain);
         generate_list(fridge, itemchain);
     }
-    //print_list(fridge);
     free(buffer);
     fclose(savefile);
     return itemchain;
