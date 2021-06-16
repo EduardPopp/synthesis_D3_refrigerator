@@ -10,9 +10,9 @@
 
 void display_fridge_content(llist_t *fridge)
 {
-    llist_t *cur = malloc(sizeof(llist_t));
+    llist_t *cur = fridge->prev;
 
-    for (cur = fridge->prev; cur != NULL; cur = cur->next) {
+    for (; cur != NULL; cur = cur->next) {
         printf("%s = %d\n", cur->item, cur->quantity);
     }
     free(cur);

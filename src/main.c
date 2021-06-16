@@ -123,12 +123,12 @@ void free_items(char **itemchain)
     free(itemchain);
 }
 
-void list_free(llist_t *fridge, char **command_array)
+void list_free(llist_t *fridge, char **command_array, char *commandstring)
 {
     llist_t *cur = fridge->prev;
     llist_t *next;
 
-    for (int i = 0; command_array[i] != NULL; i++) {
+    for (int i = 0; i < 5; i++) {
         free(command_array[i]);
     }
     free(command_array);
@@ -139,6 +139,7 @@ void list_free(llist_t *fridge, char **command_array)
     }
     fridge->prev = NULL;
     free(fridge);
+    free(cur);
 }
 
 // void print_list(llist_t *fridge)
@@ -151,11 +152,9 @@ void list_free(llist_t *fridge, char **command_array)
 //     free(cur);
 // }
 
-void savefile_handler(llist_t *fridge)
+char **savefile_handler(llist_t *fridge, char *buffer, char **itemchain)
 {
     FILE *savefile = NULL;
-    char *buffer = NULL;
-    char **itemchain = NULL;
 
     savefile = fopen(".save", "r");
     if (savefile == NULL) {
@@ -170,24 +169,25 @@ void savefile_handler(llist_t *fridge)
         generate_list(fridge, itemchain);
     }
     //print_list(fridge);
-    free_items(itemchain);
     free(buffer);
+    fclose(savefile);
+    return itemchain;
 }
 
 int main(void)
 {
     llist_t *fridge = create_list();
-    //int len = 33;
-    //char *commandstring = calloc((len + 1), sizeof(char));
-    char *commandstring = "disp fridge\n;addToFridge\n;make\n;exit\n";
+    char *buffer = NULL;
+    char **itemchain = NULL;
+    char *commandstring = "disp fridge\n;addToFridge;make;exit\n";
     char **command_array = my_str_to_word_array(commandstring, ';', 0);
     int loopstate = 1;
 
     for (int i = 0; command_array[i] != NULL; i++) {
-        printf("%d - %s", i, command_array[i]);
+        printf("%d - %s\n", i, command_array[i]);
     }
-    savefile_handler(fridge);
+    itemchain = savefile_handler(fridge, buffer, itemchain);
     fridge_loop(fridge, loopstate, command_array);
-    list_free(fridge, command_array);
-    free(commandstring);
+    free_items(itemchain);
+    list_free(fridge, command_array, commandstring);
 }
