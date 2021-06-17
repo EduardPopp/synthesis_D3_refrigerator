@@ -8,24 +8,18 @@
 #include "../include/helper.h"
 #include "../include/my.h"
 
-char *prepare_buffer(char *buffer)
-{
-    for (int i = 0; buffer[i] != '\0'; i++) {
-        if (buffer[i] == '\n') {
-            buffer[i] = ' ';
-        }
-    }
-    return buffer;
-}
-
 llist_t *generate_list(llist_t *fridge, char **itemchain)
 {
+    int control = 0;
+
     for (int i = 0; itemchain[i] != NULL; i++) {
         if (strcmp(itemchain[i], "=") == 0) {
             i++;
             continue;
         }
-        new_node(fridge, itemchain, i);
+        control = new_node(fridge, itemchain, i);
+        if (control == -1)
+            return NULL;
     }
     return (fridge);
 }
@@ -47,60 +41,6 @@ void check_itemchain(char **itemchain)
     }
 }
 
-void check_amount_of_rows(char *buffer)
-{
-    int count_nl = 0;
-
-    for (int i = 0; buffer[i] != '\0'; i++) {
-        if (buffer[i] == '\n') {
-            count_nl++;
-        }
-    }
-    if (count_nl != 8)
-        exit(84);
-}
-
-void check_spacing(char *buffer)
-{
-    int count_space = 0;
-
-    for (int i = 0; buffer[i] != '\0'; i++) {
-        if (buffer[i] == ' ') {
-            count_space++;
-        }
-    }
-    if (count_space != 16) {
-        exit(84);
-    }
-}
-
-void check_buffer(char *buffer)
-{
-    if (buffer == NULL)
-        exit(84);
-    check_amount_of_rows(buffer);
-    check_spacing(buffer);
-}
-
-char *read_file(void)
-{
-    char *buffer = NULL;
-    int fd = open(".save", O_RDONLY);
-    struct stat st;
-
-    stat(".save", &st);
-    buffer = calloc((st.st_size + 1), sizeof(char));
-    if (fd < 0) {
-        write(2, "File opening failed.\n", 21);
-        return NULL;
-    }
-    read(fd, buffer, st.st_size);
-    check_buffer(buffer);
-    close(fd);
-    buffer = prepare_buffer(buffer);
-    return (buffer);
-}
-
 void init_savefile(FILE *savefile)
 {
     savefile = fopen(".save", "w+");
@@ -113,33 +53,6 @@ void init_savefile(FILE *savefile)
     fprintf(savefile, "%s = %s\n", "ham", "50");
     fprintf(savefile, "%s = %s\n", "cheese", "50");
     fclose(savefile);
-}
-
-void free_items(char **itemchain)
-{
-    for (int i = 0; itemchain[i] != NULL; i++) {
-        free(itemchain[i]);
-    }
-    free(itemchain);
-}
-
-void list_free(llist_t *fridge, char **command_array)
-{
-    llist_t *cur = fridge->prev;
-    llist_t *next;
-
-    for (int i = 0; i < 5; i++) {
-        free(command_array[i]);
-    }
-    free(command_array);
-    while (cur != NULL) {
-        next = cur->next;
-        free(cur);
-        cur = next;
-    }
-    fridge->prev = NULL;
-    free(fridge);
-    free(cur);
 }
 
 char **savefile_handler(llist_t *fridge, char *buffer, char **itemchain)
@@ -157,9 +70,9 @@ char **savefile_handler(llist_t *fridge, char *buffer, char **itemchain)
         itemchain = my_str_to_word_array(buffer, ' ', 0);
         check_itemchain(itemchain);
         generate_list(fridge, itemchain);
+        fclose(savefile);
     }
     free(buffer);
-    fclose(savefile);
     return itemchain;
 }
 
@@ -168,7 +81,7 @@ int main(void)
     llist_t *fridge = create_list();
     char *buffer = NULL;
     char **itemchain = NULL;
-    char *commandstring = "disp fridge\n;addToFridge;make;exit\n";
+    char *commandstring = "disp fridge;addToFridge;make;exit";
     char **command_array = my_str_to_word_array(commandstring, ';', 0);
     int loopstate = 1;
 

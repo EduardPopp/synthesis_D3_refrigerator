@@ -25,3 +25,38 @@ int do_exit(char *linestr, llist_t *fridge)
     }
     return 1;
 }
+
+int check_for_invalid_commands(char *linestr)
+{
+    char *displaystr = NULL;
+    int len = my_strlen(linestr) - 1;
+
+    if (strcmp(linestr, "disp fridge\n") != 0 && \
+    strcmp(linestr, "exit\n") != 0 && strncmp(linestr, "addToFridge", 7) != 0 \
+    && strncmp("make", linestr, 3) != 0) {
+        displaystr = strdup(linestr);
+        displaystr[len] = '\0';
+        printf("'%s': Invalid operation\n", displaystr);
+    }
+    free(displaystr);
+    return 1;
+}
+
+void free_input(char **inputarray)
+{
+    for (int i = 0; inputarray[i] != NULL; i++) {
+    free(inputarray[i]);
+    }
+    free(inputarray);
+}
+
+void low(char *linestr, char *itemname)
+{
+    int len = my_strlen(linestr) - 1;
+    char *displaystr = NULL;
+
+    displaystr = strdup(linestr);
+    displaystr[len] = '\0';
+    printf("'%s': not enough %s\n", displaystr, itemname);
+    free(displaystr);
+}

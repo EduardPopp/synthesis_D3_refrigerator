@@ -11,7 +11,10 @@ SRC	=	src/main.c \
 		src/fridgeloop.c	\
 		src/exit_fridge.c	\
 		src/display_command.c	\
-		src/fridgeloop_utils.c
+		src/fridgeloop_utils.c	\
+		src/make_command.c	\
+		src/buffer_utils.c	\
+		src/free_utils.c
 
 OBJ	=	$(SRC:.c=.o)
 

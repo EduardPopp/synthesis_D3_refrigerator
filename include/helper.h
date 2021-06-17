@@ -34,4 +34,18 @@ int do_display(char *linestr, llist_t *fridge);
 
 int do_exit(char *linestr, llist_t *fridge);
 
+int check_for_invalid_commands(char *linestr);
+
+void free_input(char **inputarray);
+
+void low(char *linestr, char *itemname);
+
+int do_make(char *linestr, char **inputarray, char **command_array, \
+llist_t *fridge);
+
+char *read_file(void);
+
+void list_free(llist_t *fridge, char **command_array);
+
+void free_items(char **itemchain);
 #endif /* !HELPER_H_ */
