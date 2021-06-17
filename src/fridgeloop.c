@@ -8,126 +8,34 @@
 #include "../include/helper.h"
 #include "../include/my.h"
 
-void add_cheese(char **inputarray, llist_t *fridge)
+void add_items_to_fridge(char *linestr, char **inputarray, llist_t *fridge)
 {
     llist_t *cur = fridge->prev;
+    char *displaystring = NULL;
     int nb = my_getnbr(inputarray[2]);
+    int is_valid_field = 0;
+    int len = my_strlen(linestr) - 1;
 
     for (; cur != NULL; cur = cur->next) {
         if (strcmp(inputarray[1], cur->item) == 0) {
             cur->quantity += nb;
         }
+        if (strcmp(inputarray[1], cur->item) != 0)
+            is_valid_field = -1;
     }
-}
-
-void add_ham(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
+    if (is_valid_field == -1) {
+        displaystring = strdup(linestr);
+        displaystring[len] = '\0';
+        printf("'%s': Invalid operation\n", displaystring);
     }
+    free(displaystring);
 }
 
-void add_pepper(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
-    }
-}
-
-void add_olives(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
-    }
-}
-
-void add_pasta(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
-    }
-}
-
-void add_onions(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
-    }
-}
-
-void add_dough(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
-    }
-}
-
-void add_tomatoes(char **inputarray, llist_t *fridge)
-{
-    llist_t *cur = fridge->prev;
-    int nb = my_getnbr(inputarray[2]);
-
-    for (; cur != NULL; cur = cur->next) {
-        if (strcmp(inputarray[1], cur->item) == 0) {
-            cur->quantity += nb;
-        }
-    }
-}
-
-void add_items_to_fridge(char **inputarray, llist_t *fridge)
-{
-    if (strcmp(inputarray[1], "tomato") == 0)
-        add_tomatoes(inputarray, fridge);
-    if (strcmp(inputarray[1], "dough") == 0)
-        add_dough(inputarray, fridge);
-    if (strcmp(inputarray[1], "onion") == 0)
-        add_onions(inputarray, fridge);
-    if (strcmp(inputarray[1], "pasta") == 0)
-        add_pasta(inputarray, fridge);
-    if (strcmp(inputarray[1], "olive") == 0)
-        add_olives(inputarray, fridge);
-    if (strcmp(inputarray[1], "pepper") == 0)
-        add_pepper(inputarray, fridge);
-    if (strcmp(inputarray[1], "ham") == 0)
-        add_ham(inputarray, fridge);
-    if (strcmp(inputarray[1], "cheese") == 0)
-        add_cheese(inputarray, fridge);
-}
-
-int do_add_items(char **inputarray, char **command_array, llist_t *fridge)
+int do_add_items(char *linestr, char **inputarray, char **command_array, \
+llist_t *fridge)
 {
     if (strcmp(inputarray[0], command_array[1]) == 0) {
-        add_items_to_fridge(inputarray, fridge);
+        add_items_to_fridge(linestr, inputarray, fridge);
         return 1;
     }
     return 1;
@@ -139,6 +47,124 @@ void free_input(char **inputarray)
     free(inputarray[i]);
     }
     free(inputarray);
+}
+
+void low(char *linestr, char *itemname)
+{
+    int len = my_strlen(linestr) - 1;
+    char *displaystr = NULL;
+
+    displaystr = strdup(linestr);
+    displaystr[len] = '\0';
+    printf("'%s': not enough %s\n", displaystr, itemname);
+    free(displaystr);
+}
+
+void make_pizza_ext(llist_t *cur, char *linestr)
+{
+    if (strcmp(cur->item, "pepper") == 0 && cur->quantity >= 8)
+            cur->quantity -= 8;
+    if (strcmp(cur->item, "ham") == 0 && cur->quantity >= 4)
+            cur->quantity -= 4;
+    if (strcmp(cur->item, "cheese") == 0 && cur->quantity >= 3)
+            cur->quantity -= 3;
+    if ((strcmp(cur->item, "pepper") == 0 && cur->quantity < 8) || \
+    (strcmp(cur->item, "ham") == 0 && cur->quantity < 4) || \
+    (strcmp(cur->item, "cheese") == 0 && cur->quantity < 3)) {
+        low(linestr, cur->item);
+        return;
+    }
+}
+
+void make_pizza(char *linestr, llist_t *fridge)
+{
+    llist_t *cur = fridge->prev;
+
+    for (; cur != NULL; cur = cur->next) {
+        if (strcmp(cur->item, "tomato") == 0 && cur->quantity >= 5)
+            cur->quantity -= 5;
+        if (strcmp(cur->item, "dough") == 0 && cur->quantity >= 1)
+            cur->quantity -= 1;
+        if (strcmp(cur->item, "onion") == 0 && cur->quantity >= 3)
+            cur->quantity -= 3;
+        if (strcmp(cur->item, "olive") == 0 && cur->quantity >= 8)
+            cur->quantity -= 8;
+        if ((strcmp(cur->item, "tomato") == 0 && cur->quantity < 5) || \
+        (strcmp(cur->item, "dough") == 0 && cur->quantity < 1) || \
+        (strcmp(cur->item, "onion") == 0 && cur->quantity < 3) || \
+        (strcmp(cur->item, "olive") == 0 && cur->quantity < 8)) {
+            low(linestr, cur->item);
+        }
+        make_pizza_ext(cur, linestr);
+    }
+}
+
+void make_pasta(char *linestr, llist_t *fridge)
+{
+    llist_t *cur = fridge->prev;
+
+    for (; cur != NULL; cur = cur->next) {
+        if (strcmp(cur->item, "tomato") == 0 && cur->quantity >= 5)
+            cur->quantity -= 5;
+        if (strcmp(cur->item, "pasta") == 0 && cur->quantity >= 2)
+            cur->quantity -= 2;
+        if (strcmp(cur->item, "olive") == 0 && cur->quantity >= 6)
+            cur->quantity -= 6;
+        if (strcmp(cur->item, "cheese") == 0 && cur->quantity >= 3)
+            cur->quantity -= 3;
+        if (strcmp(cur->item, "ham") == 0 && cur->quantity >= 4)
+            cur->quantity -= 4;
+        if ((strcmp(cur->item, "tomato") == 0 && cur->quantity < 5)|| \
+        (strcmp(cur->item, "pasta") == 0 && cur->quantity < 2) || \
+        (strcmp(cur->item, "olive") == 0 && cur->quantity < 6) || \
+        (strcmp(cur->item, "cheese") == 0 && cur->quantity < 3) || \
+        (strcmp(cur->item, "ham") == 0 && cur->quantity < 4))
+            low(linestr, cur->item);
+    }
+}
+
+void make_meal(char *linestr, char **inputarray, llist_t *fridge)
+{
+    char *displaystr = NULL;
+    int len = my_strlen(inputarray[1]) - 1;
+
+    if (strcmp(inputarray[1], "pizza\n") == 0)
+        make_pizza(linestr, fridge);
+    if (strcmp(inputarray[1], "pasta\n") == 0) {
+        make_pasta(linestr, fridge);
+    }
+    if (strcmp(inputarray[1], "pizza\n") != 0 && \
+    strcmp(inputarray[1], "pasta\n") != 0) {
+        displaystr = strdup(inputarray[1]);
+        displaystr[len] = '\0';
+        printf("'%s': meal unknown\n", displaystr);
+    }
+    free(displaystr);
+}
+
+int do_make(char *linestr, char **inputarray, char **command_array, llist_t *fridge)
+{
+    if (strcmp(inputarray[0], command_array[2]) == 0) {
+        make_meal(linestr, inputarray, fridge);
+        return 1;
+    }
+    return 1;
+}
+
+int check_for_invalid_commands(char *linestr)
+{
+    char *displaystr = NULL;
+    int len = my_strlen(linestr) - 1;
+    char **arraystr = my_str_to_word_array(linestr, '\n', 0);
+
+    if (strcmp(arraystr[0], "disp fridge\n") != 0) {
+        displaystr = strdup(linestr);
+        displaystr[len] = '\0';
+        printf("'%s': Invalid operation\n", displaystr);
+    }
+    free(displaystr);
+    free_input(arraystr);
+    return 1;
 }
 
 int get_input(llist_t *fridge, char **command_array)
@@ -154,11 +180,10 @@ int get_input(llist_t *fridge, char **command_array)
         exit(84);
     inputarray = my_str_to_word_array(linestr, ' ', 0);
     retval = do_display(linestr, fridge);
-    retval = do_add_items(inputarray, command_array, fridge);
+    retval = do_add_items(linestr, inputarray, command_array, fridge);
+    retval = do_make(linestr, inputarray, command_array, fridge);
+    retval = check_for_invalid_commands(linestr);
     retval = do_exit(linestr, fridge);
-    //if (strcmp(inputarray[0], command_array[2]) == 0)
-        //make_meal(linestr, fridge);
-    //check_for_invalid_commands(linestr, command_array, fridge);
     free(linestr);
     free_input(inputarray);
     return retval;

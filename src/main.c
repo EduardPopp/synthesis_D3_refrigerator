@@ -123,7 +123,7 @@ void free_items(char **itemchain)
     free(itemchain);
 }
 
-void list_free(llist_t *fridge, char **command_array, char *commandstring)
+void list_free(llist_t *fridge, char **command_array)
 {
     llist_t *cur = fridge->prev;
     llist_t *next;
@@ -171,9 +171,9 @@ int main(void)
     char *commandstring = "disp fridge\n;addToFridge;make;exit\n";
     char **command_array = my_str_to_word_array(commandstring, ';', 0);
     int loopstate = 1;
-    
+
     itemchain = savefile_handler(fridge, buffer, itemchain);
     fridge_loop(fridge, loopstate, command_array);
     free_items(itemchain);
-    list_free(fridge, command_array, commandstring);
+    list_free(fridge, command_array);
 }
